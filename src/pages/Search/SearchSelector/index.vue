@@ -8,7 +8,7 @@
                         path:'/search',
                         query:{
                             ...$route.query,
-                            //跟据API接口
+                            //跟据API
                             trademark:item.tmId+':'+item.tmName
                         }
 
