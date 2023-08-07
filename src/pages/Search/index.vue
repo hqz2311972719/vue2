@@ -3,33 +3,7 @@
     <div class="main">
         <div class="py-container">
             <!--bread-->
-            <div class="bread" v-show="isSelector">
-                <ul class="fl sui-breadcrumb">
-                    <li>
-                        <a href="#">全部结果</a>
-                    </li>
-                </ul>
-                <ul class="fl sui-tag">
-                    <!--  渲染类别名称 -->
-                    <li v-if="$route.query.categoryName" class="with-x">
-                        {{$route.query.categoryName}}<i @click="moveCategoryName">×</i>
-                    </li>
-                    <!--  关键词内容 -->
-                    <li v-if="$route.query.keyword" class="with-x">
-                        {{$route.query.keyword}}<i @click="moveKeyword">×</i>
-                    </li>
-                    <!-- 品牌 -->
-                    <li v-if="$route.query.trademark" class="with-x">
-                        {{$route.query.trademark.split(":")[1]}}
-                        <i @click="moveTrademark">x</i>
-                    </li>
-                      <!-- 属性 -->
-                    <li v-for="item in $route.query.props" class="with-x">
-                        {{item.split(":")[1]}}
-                        <i @click="moveProps(item)">x</i>
-                    </li>
-                </ul>
-            </div>
+          <BreadSelector></BreadSelector>
             <!--selector-->
             <SearchSelector></SearchSelector>
             <!--details-->
@@ -170,9 +144,10 @@
 
 <script>
 import SearchSelector from "@/pages/Search/SearchSelector";
+import BreadSelector from "@/pages/Search/BreadSelector"
 export default {
     name: "Search",
-    components: {SearchSelector},
+    components: {SearchSelector,BreadSelector},
     data(){
         // 转化为数组
         const [type,flag] =(this.$route.query.order ||"1:desc").split(":");
@@ -306,64 +281,7 @@ h3{
     .py-container{
         width: 1200px;
         margin: 0 auto;
-        .bread{
-            margin-bottom: 5px;
-            overflow: hidden;
-            .sui-breadcrumb{
-                padding: 3px 15px;
-                margin: 0;
-                font-weight: 400;
-                border-radius: 3px;
-                float:left;
-                li{
-                    display: inline-block;
-                    line-height: 18px;
-                    a{
-                        color: #666;
-                        text-decoration: none;
-                        &:hover{
-                            color: #4cb9fc;
-                        }
-                    }
-                }
-            }
-            .sui-tag{
-                margin-top: -5px;
-                list-style: none;
-                font-size: 0;
-                line-height: 0;
-                padding: 5px 0 0;
-                margin-bottom: 18px;
-                float: left;
-                .with-x{
-                    font-size: 12px;
-                    margin: 0 5px 5px 0;
-                    display: inline-block;
-                    overflow: hidden;
-                    color: #000;
-                    background: #f7f7f7;
-                    padding: 0 7px;
-                    height: 20px;
-                    line-height: 20px;
-                    border: 1px solid #dedede;
-                    white-space: nowrap;
-                    transition:color 400ms;
-                    cursor: pointer;
-                    i{
-                        margin-left: 10px;
-                        cursor: pointer;
-                        font: 400 14px tahoma;
-                        display: inline-block;
-                        height: 100%;
-                        vertical-align: middle;
-                    }
-                    &:hover{
-                        color: #28a3ef;
-                    }
-                }
-            }
-        }
-
+      
         .details{
             margin-bottom: 5px;
             .sui-navbar{
