@@ -34,9 +34,9 @@
                     </router-link>
                 </h1>
                 <div class="searchArea">
-                    <form autocomplete="off" class="searchForm">
-                        <input placeholder="请输入搜索的关键词" type="text" ref="keyword" id="autocomplete" class="input-error input-xxlarge" />
-                        <button @click="goSearch" class="sui-btn btn-xlarge btn-danger" type="button">搜索</button>
+                    <form @submit.prevent="goSearch"  autocomplete="off" class="searchForm">
+                        <input name="keyword" placeholder="请输入搜索的关键词" type="text" ref="keyword" id="autocomplete" class="input-error input-xxlarge" />
+                        <button  class="sui-btn btn-xlarge btn-danger" type="submit">搜索</button>
                     </form>
                 </div>
             </div>

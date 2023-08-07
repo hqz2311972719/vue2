@@ -16,7 +16,18 @@ const state = {
 	rankList2:[],// 第二种方案
 	// 搜索的结果
 	searchProductResult:{
-		trademarkList:[]
+		trademarkList:[],
+// 定义状态数据
+
+		// 当前页
+		pageNo:1,
+		// 每页显示的条数
+		pageSize:1,
+		// 总条数
+		total:1,
+		// 总页数
+		totalPages:10
+
 	}
 }
 const mutations = {

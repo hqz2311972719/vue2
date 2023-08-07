@@ -77,8 +77,8 @@
                         </li>
                     </ul>
                 </div>
-                <!-- 分页组件 -->
-               <Pagination></Pagination>
+                <!-- 分页组件  定义好连续页，总页数等-->
+               <Pagination :continue="5" :total="103" :pageNo ="16" :pageSize="5" ></Pagination>
             </div>
             <!--hotsale-->
             <div class="clearfix hot-sale">

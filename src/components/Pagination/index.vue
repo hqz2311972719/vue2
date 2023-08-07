@@ -11,16 +11,23 @@
         <button>18</button>
 
         <span>···</span>
-        <button>21</button>
+        <button>{{pageSum}}</button>
         <button>下一页</button>
 
-        <span>共 103 条</span>
+        <span>共 {{total}} 条</span>
     </div>
 </template>
 
 <script>
 export default {
-    name: "Pagination"
+    name: "Pagination",
+    props:["total","pageSize"],
+    computed:{
+        pageSum(){
+            return Math.ceil(this.total/this.pageSize)
+        }
+    }
+
 }
 </script>
 
