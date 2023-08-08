@@ -6,6 +6,7 @@ import tejia from "./tejia.json";
 import xinpin from "./xinpin.json";
 import remai from "./remai.json";
 import likeList from "./likeList.json";
+import hotsale from "./hotsale.json"
 // 获取首页中轮播图的图片列表
 // 请求方式：get
 // 请求地址：http://mock.com/adv/focus
@@ -49,6 +50,7 @@ Mock.mock("http://mock.com/product/rankList","get",{
 });
 
 // 热卖排行
+// 发送请求之前，要提前在mock的index里面把地址写全，在mock的json文件里面使用这个地址发送请求
 //                        /product/remai
 Mock.mock("http://mock.com/product/remai","get",{
 	ok:200,
@@ -70,3 +72,10 @@ Mock.mock("http://mock.com/product/likeList","get",{
 	ok:200,
 	data:likeList
 })
+
+// 热卖商品
+Mock.mock("http://mock.com/product/hotsale","get",{
+	ok:200,
+	data:hotsale,
+})
+// console.log("")

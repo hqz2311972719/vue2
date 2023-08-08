@@ -31,19 +31,19 @@
 <script>
 export default {
     name:"BreadSelector",
-    data(){
-        // 转化为数组
-        // const [type,flag] =(this.$route.query.order ||"1:desc").split(":");
+    // data(){
+    //     // 转化为数组
+    //     // const [type,flag] =(this.$route.query.order ||"1:desc").split(":");
 
-        // return{
-        //     // 排序方式
-        //     // 排序类型（type） 1:综合 2.价格
-        //     // 排序标识： asc:升序  dsec:降序
-        //     // 示例：“1：desc”
-        //     type,
-        //     flag
-        // }
-    },
+    //     // return{
+    //     //     // 排序方式
+    //     //     // 排序类型（type） 1:综合 2.价格
+    //     //     // 排序标识： asc:升序  dsec:降序
+    //     //     // 示例：“1：desc”
+    //     //     type,
+    //     //     flag
+    //     // }
+    // },
     methods:{
 
         // orderSearch(type){

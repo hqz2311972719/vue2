@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "title": "Apple苹果iPhone 6s (A1699)",
+        "imgUrl": "/images/search/like_01.png",
+        "price": 89
+    },
+    {
+        "id": 2,
+        "title": "金属A面，360°翻转，APP下单省300！",
+        "imgUrl": "/images/search/like_02.png",
+        "price": 89
+    },
+    {
+        "id": 3,
+        "title": "金属A面，360°翻转，APP下单省300！",
+        "imgUrl": "/images/search/like_02.png",
+        "price": 89
+    },
+    {
+        "id": 4,
+        "title": "金属A面，360°翻转，APP下单省300！",
+        "imgUrl": "/images/search/like_02.png",
+        "price": 89
+    }
+]

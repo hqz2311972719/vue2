@@ -5,10 +5,21 @@ import {
 	getRemaiList,
 	getTeJiaList,
 	getXinPinList,
-	postProductList
+	postProductList,
+	getProductInfoById
 } from "@/api/product";
 
 const state = {
+
+// 商品信息
+productInfo:{
+	// 商品详情
+	skuInfo:{
+		skuImageList:[]
+	},
+},
+	
+
 	// 首页分类列表
 	categoryList:[],
 	floorList:[],// 楼层数据信息
@@ -31,6 +42,20 @@ const state = {
 	}
 }
 const mutations = {
+	// 根据id修改选中项
+	CHANGE_IMAGE_LIST_ID(state,id){
+		// 1.将之前的选中项移除，修改为0
+		state.productInfo.skuInfo.skuImageList.find(v=v.isDefault==="1").isDefault="0";
+		// 2.根据ID，将isdefault修改为0；
+		state.productInfo.skuInfo.skuImageList.find(v=>v.id === id).isDefault = "1";
+
+	},
+
+	// 保存商品信息
+	SAVE_PRODUCT_INFO(state,payload){
+		state.productInfo = payload;
+	},
+
 	// 保存搜索结果
 	SAVE_SEARCH_PRODUCT_RESULT(state,result){
 		state.searchProductResult = result;
@@ -50,6 +75,11 @@ const mutations = {
 	}
 }
 const actions = {
+	async getProductInfoByIdAsync({commit},id){
+		const {data} =await getProductInfoById(id)
+		commit("SAVE_PRODUCT_INFO",data);
+	},
+
 	async postProductListAsync({commit},body){
 		const {data} = await postProductList(body);
 		commit("SAVE_SEARCH_PRODUCT_RESULT",data);
