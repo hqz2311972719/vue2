@@ -1,45 +1,40 @@
 <template>
-     <div>
+    <div>
         <!-- 主要内容区域 -->
         <section class="con">
             <!-- 导航路径区域 -->
             <div class="conPoin">
                 <div class="conPoin">
-                    <!-- <a href="###">手机、数码、通讯</a>
-                    <a href="###">手机</a>
-                    <a href="###">Apple苹果</a>
-                    <a>iphone 6S系类</a> -->
                     <router-link v-for="c in 3" :key="c" :to="{
                         path:'/search',
                         query:{
                             [`category${c}Id`]:categoryView[`category${c}Id`],
-                            categoryName:categoryView[`category${c}Name`]
+                            categoryName:categoryView[`category${c}Name`],
                         }
-
-                    }">{{categoryView[`category${c}Name`]}}</router-link>
+                    }">{{ categoryView[`category${c}Name`] }}
+                    </router-link>
                 </div>
             </div>
             <!-- 主要内容区域 -->
             <div class="mainCon">
                 <!-- 左侧放大镜区域 -->
-               <div class="mainCon">
-                <!-- 左侧放大镜区域 -->
                 <div class="previewWrap">
                     <!--放大镜效果-->
                     <Zoom></Zoom>
                     <!--下方的缩略图-->
-               <ImageList></ImageList>
+                    <ImageList></ImageList>
                 </div>
                 <!-- 右侧选择区域布局 -->
                 <div class="InfoWrap">
-                    <div class="goodsDetail"><h3 class="InfoName">Apple iPhone 6s（A1700）64G玫瑰金色 移动通信电信4G手机</h3>
-                        <p class="news">推荐选择下方[移动优惠购],手机套餐齐搞定,不用换号,每月还有花费返</p>
+                    <div class="goodsDetail">
+                        <h3 class="InfoName">{{ skuInfo.skuName }}</h3>
+                        <p class="news">{{ skuInfo.skuDesc }}</p>
                         <div class="priceArea">
                             <div class="priceArea1">
                                 <div class="title">价&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;格</div>
                                 <div class="price">
                                     <i>¥</i>
-                                    <em>5299</em>
+                                    <em>{{ skuInfo.price }}</em>
                                 </div>
                             </div>
                         </div>
@@ -48,22 +43,31 @@
                     <div class="choose">
                         <div class="chooseArea">
                             <div class="choosed"></div>
-                            <dl><dt class="title">选择颜色</dt><dd changepirce="0">金色</dd><dd changepirce="40">银色</dd><dd changepirce="90">黑色</dd></dl><dl><dt class="title">内存容量</dt><dd changepirce="0">16G</dd><dd changepirce="300">64G</dd><dd changepirce="900">128G</dd><dd changepirce="1300">256G</dd></dl><dl><dt class="title">选择版本</dt><dd changepirce="0">公开版</dd><dd changepirce="-1000">移动版</dd></dl><dl><dt class="title">购买方式</dt><dd changepirce="0">官方标配</dd><dd changepirce="-240">优惠移动版</dd><dd changepirce="-390">电信优惠版</dd></dl></div>
+                            <dl v-for="item in spuSaleAttrList" :key="item.id">
+                                <dt class="title">选择{{ item.saleAttrName }}</dt>
+                                <dd @click="upAttr(item.id,info.id,info.isChecked)" :class="{active:info.isChecked/1===1}" v-for="info in item.spuSaleAttrValueList"
+                                    :key="info.id" changepirce="0">{{ info.saleAttrValueName }}
+                                </dd>
+                            </dl>
+                        </div>
 
                         <div class="cartWrap">
                             <div class="controls">
-                                <input autocomplete="off" value="1" class="itxt">
-                                <a href="###" class="plus">+</a>
-                                <a href="###" class="mins">-</a>
+                                <!--   1- @change -->
+<!--                                <input @change="upBuyNum" autocomplete="off" :value="buyNum" class="itxt">-->
+                                <!--   2- @input防抖1-原生 -->
+<!--                                <input @input="upBuyNum2" autocomplete="off" :value="buyNum" class="itxt">-->
+                                <!--   3- @input防抖2-lodash-->
+                                <input @input="upBuyNum3" autocomplete="off" :value="buyNum" class="itxt">
+                                <a href="###" :class="['plus',{disabled:buyNum===200}]" @click.prevent="changeBuyNum">+</a>
+                                <a href="###" :class="['mins',{disabled:buyNum===1}]" @click.prevent="changeBuyNum">-</a>
                             </div>
                             <div class="add">
-                                <a href="###" target="_blank">加入购物车</a>
+                                <a @click.prevent="addCart"  href="###" target="_blank">加入购物车</a>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-             
             </div>
         </section>
 
@@ -92,7 +96,7 @@
                                     <div class="p-img">
                                         <img src="../../assets/images/part01.png">
                                     </div>
-                                    <div class="attr">Apple苹果iPhone 6s (A1699) </div>
+                                    <div class="attr">Apple苹果iPhone 6s (A1699)</div>
                                     <div class="price">
                                         <em>¥</em>
                                         <i>6088.00</i>
@@ -183,7 +187,8 @@
                     <div class="tab-pane">
                         <p>推荐品牌</p>
                     </div>
-                </div></aside>
+                </div>
+            </aside>
             <div class="detail">
                 <div class="fitting">
                     <h4 class="kt">选择搭配</h4>
@@ -393,162 +398,211 @@
             </ul>
         </div>
     </div>
+
 </template>
 
 <script>
-import {mapState} from "vuex"
-import Zoom from "@/pages/Detail/Zoom"
-import  ImageList from "@/pages/Detail/ImageList"
+import {mapState} from "vuex";
+import Zoom from "@/pages/Detail/Zoom";
+import ImageList from "@/pages/Detail/ImageList";
+import {goodsNumReg} from "@/utils/reg";
+import {debounce} from "lodash"
+
 export default {
-    name:"Detail",
-    components:{Zoom, ImageList},
-    computed:mapState("product",{
-        // 设置状态
-    skuInfo(state){
-        return state.productInfo.skuInfo;
+    name: "Detail",
+    data() {
+        return {
+            // 购买的初始数量
+            buyNum: 1
+        }
     },
-    // 配置
-    spuSaleAttrList(state){
-         return state.productInfo.spuSaleAttrList
-    },
-    // 类别，面包屑导航
-    categoryView(state){
-        return state.productInfo.categoryView || {};
-    }
+    methods: {
+        upAttr(a1Id,a2Id,isChecked){
+            if(isChecked === "1") return;
+            console.log(111)
+            this.$store.commit('product/UP_ATTR_LIST_BY_ID',{a1Id,a2Id})
+        },
+        // 加入购物车
+        async addCart(){
+            sessionStorage.setItem("addCartInfo",JSON.stringify({
+                buyNum:this.buyNum,
+                attrList:this.spuSaleAttrList,
+                ...this.skuInfo
+            }));
+            await this.$store.dispatch("cart/postAddToCartAsync",{
+                skuId:this.$route.params.id,
+                skuNum:this.buyNum
+            })
 
+            this.$router.push("/addCartSuccess")
+        },
+        changeBuyNum(e) {
+            // 减法
+            if (e.target.classList.contains("mins")) {
+                if(this.buyNum===1) return;
+                this.buyNum--;
+            }else if(e.target.classList.contains("plus")){
+                if(this.buyNum===200) return;
+                this.buyNum++;
+            }
+        },
+        upBuyNum(e){
+            // 输入的内容必须是数字，范围1---200
+            const num = e.target.value.trim()/1;
+            if(goodsNumReg.test(num)){
+                this.buyNum = num;
+            }else{
+                e.target.value = this.buyNum;
+            }
+        },
+        upBuyNum2(e){
+            // 防抖：在指定的时间到达后函数执行一次，如果指定时间没有到，事件再次触发，重新计时。
+            if(this.timer) clearTimeout(this.timer);
+            this.timer = setTimeout(()=>{
+                console.log("111")
+                // 输入的内容必须是数字，范围1---200
+                const num = e.target.value.trim()/1;
+                if(goodsNumReg.test(num)){
+                    this.buyNum = num;
+                }else{
+                    e.target.value = this.buyNum;
+                }
+            },1000)
+        },
+        // 如何使用lodash?
+        // 1- 下载cnpm install lodash
+        // 2- 引入 import {debounce} from "lodash"
+        // 3- 使用
+        upBuyNum3:debounce(function(e){
+            const num = e.target.value.trim()/1;
+            if(goodsNumReg.test(num)){
+                this.buyNum = num;
+            }else{
+                e.target.value = this.buyNum;
+            }
+        },1000)
+    },
+    components: {ImageList, Zoom},
+    computed: mapState("product", {
+        // 详情
+        skuInfo(state) {
+            return state.productInfo.skuInfo;
+        },
+        // 配置
+        spuSaleAttrList(state) {
+            return state.productInfo.spuSaleAttrList
+        },
+        // 类别，面包屑导航
+        categoryView(state) {
+            return state.productInfo.categoryView || {};
+        }
     }),
-    
-
-
-    mounted(){
-        this.$store.dispatch("product/getProductInfoByIdAsync",this.$route.params.id)
+    mounted() {
+        this.$store.dispatch("product/getProductInfoByIdAsync", this.$route.params.id)
     }
-
 }
 </script>
 
-<style lang ="less" scoped>
-    .con{
+<style lang="less" scoped>
+.con {
     width: 1200px;
     margin: 15px auto 0;
-    .conPoin{
+
+    .conPoin {
         padding: 9px 15px 9px 0;
-        &>a + a:before {
+
+        & > a + a:before {
             content: "/\00a0";
             padding: 0 5px;
             color: #ccc;
         }
     }
-    .mainCon{
+
+    .mainCon {
         overflow: hidden;
         margin: 5px 0 15px;
-        .previewWrap{
+
+        .previewWrap {
             float: left;
             width: 400px;
             position: relative;
-          
-            .specScroll{
-                margin-top: 5px;
-                width: 400px;
-                overflow: hidden;
-                .prev,.next{
-                    text-align: center;
-                    width: 10px;
-                    height: 54px;
-                    line-height: 54px;
-                    border: 1px solid #CCC;
-                    background: #EBEBEB;
-                    cursor: pointer;
-                }
-                .prev{
-                    float: left;
-                    margin-right: 4px;
-                }
-                .next{
-                    float: right;
-                }
-                .items{
-                    float: left;
-                    position: relative;
-                    width: 372px;
-                    height: 56px;
-                    overflow: hidden;
-                    .itemsCon{
-                        position: absolute;
-                        width: 9999px;
-                        height: 56px;
-                        left: 0;
-                        img{
-                            float: left;
-                            text-align: center;
-                            border: 1px solid #CCC;
-                            padding: 2px;
-                            width: 50px;
-                            height: 50px;
-                            margin-right: 20px;
-                        }
-                    }
-                }
-            }
+
+
         }
-        .InfoWrap{
+
+        .InfoWrap {
             width: 700px;
             float: right;
-            .InfoName{
+
+            .InfoName {
                 font-size: 14px;
                 line-height: 21px;
                 margin-top: 15px;
             }
-            .news{
+
+            .news {
                 color: #e12228;
                 margin-top: 15px;
             }
+
             .priceArea {
                 background: #fee9eb;
                 padding: 7px;
                 margin: 13px 0;
-                .priceArea1{
+
+                .priceArea1 {
                     overflow: hidden;
                     line-height: 28px;
                     margin-top: 10px;
+
                     .title {
                         float: left;
                         margin-right: 15px;
                     }
+
                     .price {
                         float: left;
                         color: #c81623;
+
                         i {
                             font-size: 16px;
                         }
+
                         em {
                             font-size: 24px;
                             font-weight: 700;
                         }
+
                         span {
                             font-size: 12px;
                         }
                     }
-                    .remark{
+
+                    .remark {
                         float: right;
                     }
                 }
-                .priceArea2{
+
+                .priceArea2 {
                     overflow: hidden;
                     line-height: 28px;
                     margin-top: 10px;
+
                     .title {
                         margin-right: 15px;
                         float: left;
                     }
+
                     .fixWidth {
                         width: 520px;
                         float: left;
+
                         .red-bg {
                             background: #c81623;
                             color: #fff;
                             padding: 3px;
                         }
+
                         .t-gray {
                             color: #999;
                         }
@@ -557,31 +611,37 @@ export default {
 
 
             }
+
             .support {
                 border-bottom: 1px solid #ededed;
                 padding-bottom: 5px;
+
                 .supportArea {
                     overflow: hidden;
                     line-height: 28px;
                     margin-top: 10px;
+
                     .title {
                         margin-right: 15px;
                         float: left;
                     }
-                    .fixWidth{
+
+                    .fixWidth {
                         width: 520px;
                         float: left;
                         color: #999;
                     }
                 }
             }
-            .choose{
-                .chooseArea{
+
+            .choose {
+                .chooseArea {
                     overflow: hidden;
                     line-height: 28px;
                     margin-top: 10px;
-                    .choosed{
-                        mark{
+
+                    .choosed {
+                        mark {
                             height: 30px;
                             display: inline-block;
                             line-height: 30px;
@@ -589,7 +649,8 @@ export default {
                             border: 1px solid #ddd;
                             padding: 0 20px;
                             margin-right: 20px;
-                            a{
+
+                            a {
                                 font-size: 12px;
                                 color: red;
                                 margin-left: 20px;
@@ -597,14 +658,17 @@ export default {
                             }
                         }
                     }
-                    dl{
+
+                    dl {
                         overflow: hidden;
                         margin: 13px 0;
-                        dt{
+
+                        dt {
                             margin-right: 15px;
                             float: left;
                         }
-                        dd{
+
+                        dd {
                             float: left;
                             margin-right: 5px;
                             color: #666;
@@ -614,18 +678,21 @@ export default {
                             border-right: 1px solid #bbb;
                             border-bottom: 1px solid #bbb;
                             border-left: 1px solid #eee;
-                            &.active{
+
+                            &.active {
                                 color: red;
                             }
                         }
                     }
                 }
-                .cartWrap{
-                    .controls{
+
+                .cartWrap {
+                    .controls {
                         width: 48px;
                         position: relative;
                         float: left;
                         margin-right: 15px;
+
                         .itxt {
                             width: 38px;
                             height: 37px;
@@ -635,7 +702,8 @@ export default {
                             border-right: 0;
                             text-align: center;
                         }
-                        .plus, .mins{
+
+                        .plus, .mins {
                             width: 15px;
                             text-align: center;
                             height: 17px;
@@ -645,19 +713,28 @@ export default {
                             position: absolute;
                             right: -8px;
                             border: 1px solid #ccc;
+
+                            &.disabled {
+                                color: #ccc;
+                                cursor: not-allowed;
+                            }
                         }
+
                         .mins {
                             right: -8px;
                             top: 19px;
                             border-top: 0;
                         }
-                        .plus{
+
+                        .plus {
                             right: -8px;
                         }
                     }
-                    .add{
+
+                    .add {
                         float: left;
-                        a{
+
+                        a {
                             background-color: #e1251b;
                             padding: 0 25px;
                             font-size: 16px;
@@ -672,67 +749,83 @@ export default {
         }
     }
 }
-.productDetail{
+
+.productDetail {
     width: 1200px;
     margin: 30px auto 0;
     overflow: hidden;
-    .aside{
+
+    .aside {
         width: 210px;
         float: left;
         border: 1px solid #ccc;
-        .tabWraped{
+
+        .tabWraped {
             height: 40px;
-            h4{
+
+            h4 {
                 border-top: 3px solid #fff;
                 float: left;
                 line-height: 37px;
                 width: 105px;
                 text-align: center;
                 border-bottom: 1px solid #ccc;
-                &.active{
+
+                &.active {
                     border-top: 3px solid #e1251b;
                     border-bottom: 0;
                     font-weight: normal;
                 }
             }
         }
-        .tabContent{
+
+        .tabContent {
             padding: 10px;
-            .tab-pane{
+
+            .tab-pane {
                 display: none;
-                &.active{
+
+                &.active {
                     display: block;
                 }
-                &:nth-child(1){
-                    .partList{
+
+                &:nth-child(1) {
+                    .partList {
                         overflow: hidden;
-                        li{
+
+                        li {
                             width: 50%;
                             float: left;
                             border-bottom: 1px dashed #ededed;
                             line-height: 28px;
                         }
                     }
-                    .goodsList{
-                        &>li{
+
+                    .goodsList {
+                        & > li {
                             margin: 5px 0 15px;
                             border-bottom: 1px solid #ededed;
                             padding-bottom: 5px;
-                            .list-wrap{
-                                .p-img{
+
+                            .list-wrap {
+                                .p-img {
                                     text-align: center;
-                                    img{
+
+                                    img {
                                         width: 152px;
                                     }
                                 }
-                                .price{
+
+                                .price {
                                     font-size: 16px;
                                     color: #c81623;
                                 }
+
                                 .operate {
                                     text-align: center;
                                     margin: 5px 0;
-                                    a{
+
+                                    a {
                                         background-color: transparent;
                                         border: 1px solid #8c8c8c;
                                         color: #8c8c8c;
@@ -748,35 +841,43 @@ export default {
             }
         }
     }
-    .detail{
+
+    .detail {
         width: 980px;
         float: right;
-        .fitting{
+
+        .fitting {
             border: 1px solid #ddd;
             margin-bottom: 15px;
-            .kt{
+
+            .kt {
                 border-bottom: 1px solid #ddd;
                 background: #f1f1f1;
                 color: #333;
                 padding: 5px 0 5px 15px;
             }
-            .good-suits{
+
+            .good-suits {
                 height: 170px;
                 padding-top: 10px;
-                .master{
+
+                .master {
                     width: 127px;
                     height: 165px;
                     text-align: center;
                     position: relative;
                     float: left;
-                    img{
+
+                    img {
                         width: 87px;
                     }
-                    p{
+
+                    p {
                         color: #c81623;
                         font-size: 16px;
                         font-weight: 700;
                     }
+
                     i {
                         position: absolute;
                         top: 48px;
@@ -784,55 +885,67 @@ export default {
                         font-size: 16px;
                     }
                 }
-                .suits{
+
+                .suits {
                     width: 668px;
                     height: 165px;
                     float: left;
-                    .suitsItem{
+
+                    .suitsItem {
                         float: left;
                         width: 127px;
                         padding: 0 20px;
                         text-align: center;
-                        img{
+
+                        img {
                             width: 120px;
                             height: 130px;
                         }
-                        p{
+
+                        p {
                             font-size: 12px;
                         }
-                        label{
+
+                        label {
                             display: block;
                             position: relative;
-                            input{
+
+                            input {
                                 vertical-align: middle;
                             }
-                            span{
+
+                            span {
                                 vertical-align: middle;
                             }
                         }
                     }
                 }
-                .result{
+
+                .result {
                     border-left: 1px solid #ddd;
                     width: 153px;
                     height: 165px;
                     padding-left: 20px;
                     float: left;
-                    .num{
+
+                    .num {
                         font-size: 14px;
                         margin-bottom: 10px;
                         margin-top: 10px;
                     }
-                    .price-tit{
+
+                    .price-tit {
                         font-weight: bold;
                         margin-bottom: 10px;
                     }
+
                     .price {
                         color: #B1191A;
                         font-size: 16px;
                         margin-bottom: 10px;
                     }
-                    .addshopcar{
+
+                    .addshopcar {
                         background-color: #e1251b;
                         border: 1px solid #e1251b;
                         padding: 10px 25px;
@@ -844,24 +957,29 @@ export default {
                 }
             }
         }
-        .intro{
+
+        .intro {
             .tab-wraped {
                 background: #ededed;
                 // border: 1px solid #ddd;
                 overflow: hidden;
-                li{
+
+                li {
                     float: left;
+
                     & + li > a {
                         border-left: 1px solid #ddd;
                     }
-                    &.active{
-                        a{
+
+                    &.active {
+                        a {
                             // border: 0;
                             background: #e1251b;
                             color: #fff;
                         }
                     }
-                    a{
+
+                    a {
                         display: block;
                         height: 40px;
                         line-height: 40px;
@@ -874,21 +992,26 @@ export default {
                     }
                 }
             }
-            .tab-content{
-                .tab-pane{
+
+            .tab-content {
+                .tab-pane {
                     display: none;
-                    &.active{
+
+                    &.active {
                         display: block;
                     }
-                    &:nth-child(1){
-                        .goods-intro{
+
+                    &:nth-child(1) {
+                        .goods-intro {
                             padding-left: 10px;
-                            li{
+
+                            li {
                                 margin: 10px 0;
                             }
                         }
-                        .intro-detail{
-                            img{
+
+                        .intro-detail {
+                            img {
                                 width: 100%;
                             }
                         }
@@ -899,10 +1022,12 @@ export default {
         }
     }
 }
-.like{
+
+.like {
     width: 1198px;
     border: 1px solid #ddd;
     margin: 15px auto;
+
     .kt {
         border-bottom: 1px solid #ddd;
         background: #f1f1f1;
@@ -911,33 +1036,39 @@ export default {
         padding: 5px 10px;
 
     }
-    .like-list{
+
+    .like-list {
         padding: 15px 11px;
         overflow: hidden;
-        .likeItem{
+
+        .likeItem {
             width: 196px;
             float: left;
-            .p-img{
+
+            .p-img {
                 text-align: center;
-                img{
+
+                img {
                     width: 167px;
                     height: 123px;
                 }
             }
-            .attr{
+
+            .attr {
                 padding: 0 15px;
             }
-            .price{
+
+            .price {
                 padding: 0 15px;
                 font-size: 16px;
                 color: #c81623;
                 margin-bottom: 20px;
             }
-            .commit{
+
+            .commit {
                 padding: 0 15px;
             }
         }
     }
 }
-
 </style>

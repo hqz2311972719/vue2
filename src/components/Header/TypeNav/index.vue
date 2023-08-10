@@ -64,7 +64,6 @@ export default {
                     query:{
                         ["category"+level+"Id"]:id,
                         categoryName:e.target.innerText.trim(),
-                        keyword:this.$route.query.keyword
                     }
                 });
                 this.isShow = false;

@@ -1,25 +1,23 @@
 import {
 	getBaseCategoryList,
-	getFloorList,
+	getFloorList, getProductInfoById,
 	getRankList,
 	getRemaiList,
 	getTeJiaList,
 	getXinPinList,
-	postProductList,
-	getProductInfoById
+	postProductList
 } from "@/api/product";
 
 const state = {
-
-// 商品信息
-productInfo:{
-	// 商品详情
-	skuInfo:{
-		skuImageList:[]
+	// 商品信息
+	productInfo:{
+		// 商品详情
+		skuInfo:{
+			skuImageList:[],
+			// 配置项
+			spuSaleAttrList:[]
+		}
 	},
-},
-	
-
 	// 首页分类列表
 	categoryList:[],
 	floorList:[],// 楼层数据信息
@@ -28,34 +26,47 @@ productInfo:{
 	// 搜索的结果
 	searchProductResult:{
 		trademarkList:[],
-// 定义状态数据
-
 		// 当前页
 		pageNo:1,
 		// 每页显示的条数
-		pageSize:1,
+		pageSize:20,
 		// 总条数
 		total:1,
 		// 总页数
 		totalPages:10
-
 	}
 }
 const mutations = {
-	// 根据id修改选中项
-	CHANGE_IMAGE_LIST_ID(state,id){
-		// 1.将之前的选中项移除，修改为0
-		state.productInfo.skuInfo.skuImageList.find(v=v.isDefault==="1").isDefault="0";
-		// 2.根据ID，将isdefault修改为0；
-		state.productInfo.skuInfo.skuImageList.find(v=>v.id === id).isDefault = "1";
-
+	// 更改选中的商品标签
+	UP_ATTR_LIST_BY_ID(state,{a1Id,a2Id}){
+		// 找到一级信息
+		const info1 =  state.productInfo.spuSaleAttrList.find(v=>v.id === a1Id);
+		if(info1){
+			// 更改选中项
+			const info2 = info1.spuSaleAttrValueList.find(v=>v.id === a2Id);
+			// 如果当前值为1，说明你点击的是已经选中的配置
+			if(info2.isChecked === "1") return;
+			
+			
+			// 将之前为1的清除
+			const info = info1.spuSaleAttrValueList.find(v=>v.isChecked === "1");
+			info.isChecked = "0";
+			
+			
+			info2.isChecked = "1";
+		}
 	},
-
+	// 根据ID修改选中项
+	CAHNGE_IMAGE_LIST_BY_ID(state,id){
+		// 1- 将之前的选中项移除，修改为0
+		state.productInfo.skuInfo.skuImageList.find(v=>v.isDefault==="1").isDefault = "0";
+		// 2- 根据id,将isDefault修改为1
+		state.productInfo.skuInfo.skuImageList.find(v=>v.id === id).isDefault = "1";
+	},
 	// 保存商品信息
 	SAVE_PRODUCT_INFO(state,payload){
 		state.productInfo = payload;
 	},
-
 	// 保存搜索结果
 	SAVE_SEARCH_PRODUCT_RESULT(state,result){
 		state.searchProductResult = result;
@@ -75,11 +86,10 @@ const mutations = {
 	}
 }
 const actions = {
-	async getProductInfoByIdAsync({commit},id){
-		const {data} =await getProductInfoById(id)
+	async getProductInfoByIdAsync ({commit},id){
+		const {data} = await getProductInfoById(id);
 		commit("SAVE_PRODUCT_INFO",data);
 	},
-
 	async postProductListAsync({commit},body){
 		const {data} = await postProductList(body);
 		commit("SAVE_SEARCH_PRODUCT_RESULT",data);

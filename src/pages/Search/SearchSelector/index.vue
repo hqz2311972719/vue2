@@ -1,18 +1,16 @@
 <template>
     <div class="clearfix selector">
         <div class="type-wrap logo">
-            <div  class="fl key brand">品牌</div>
+            <div class="fl key brand">品牌</div>
             <div class="value logos">
                 <ul class="logo-list">
-                    <li  @click="$router.push({
+                    <li @click="$router.push({
                         path:'/search',
                         query:{
                             ...$route.query,
-                            //跟据API
                             trademark:item.tmId+':'+item.tmName
                         }
-
-                    })"  v-for="item in trademarkList" :key="item.tmId">
+                    })" v-for="item in trademarkList" :key="item.tmId">
                         {{item.tmName}}
                     </li>
                 </ul>
@@ -22,8 +20,8 @@
             <div class="fl key">{{item.attrName}}</div>
             <div class="fl value">
                 <ul class="type-list">
-                    <li @click="addProsGoSearch(item.attrId,info,item.attrName)"  v-for="(info,index) in item.attrValueList" :key="index">
-                        <a>{{info}}</a>
+                    <li v-for="(info,index) in item.attrValueList" :key="index">
+                        <a @click="addPropsGoSearch(item.attrId,info,item.attrName)">{{info}}</a>
                     </li>
                 </ul>
             </div>
@@ -38,18 +36,20 @@ import {mapState} from "vuex";
 export default {
     name: "SearchSelector",
     methods:{
-        addProsGoSearch(attrId,info,attrName){
-            // 添加属性的值
-            const propsValue =attrId+":"+info+":"+attrName;
-            // 判断props是否有值，如果无值，那么让其值为【】
-            const props =this.$route.qurey.props ||[];
-            // 如果拥有该属性，那么程序停止
-            if (props.includes(propsValue)) return;
-            // 编程式导航跳转
-            this.$route.push({
-                path:"/search",
-                qurey:{
-                    ...this.$route.qurey,
+        // attrId-->属性ID
+        // info---->属性值
+        // attrName--->属性名"
+        addPropsGoSearch(attrId,info,attrName){
+            // 添加的属性值
+            const propsValue = attrId+':'+info+':'+attrName;
+            // 判断props是否有值，如果无值，那么让其值为[]
+            const props = this.$route.query.props || [];
+            // 如果拥有该属性值，那么程序停止 。
+            if(props.includes(propsValue)) return;
+            this.$router.push({
+                path:'/search',
+                query:{
+                    ...this.$route.query,
                     props:[...props,propsValue]
                 }
             })

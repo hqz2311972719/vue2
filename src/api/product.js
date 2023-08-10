@@ -12,11 +12,9 @@ export const getRemaiList = ()=>{
 export const getTeJiaList = ()=>mockRequest("/product/tejia");
 export const getXinPinList = ()=>mockRequest("/product/xinpin");
 // 搜索商品,body请求体数据
-export const postProductList = (body)=>sphRequest.post("/list",body);
-
-// 获取热卖商品数据
-export const getHotSale =()=>mockRequest("/hotsale");
-
-// 根据ID获取商品详情：/api/item/{skuId}
-export const getProductInfoById =skuId=>sphRequest(`/item/${skuId}`)
-// "/item"+skuId
+export const postProductList = (body)=>{
+	// body.order = "2:desc";
+	return sphRequest.post("/list",body);
+}
+// 根据商品ID获取商品详情： /api/item/{ skuId }
+export const getProductInfoById = skuId =>sphRequest.get(`/item/${skuId}`);

@@ -3,7 +3,31 @@
     <div class="main">
         <div class="py-container">
             <!--bread-->
-          <BreadSelector></BreadSelector>
+            <div class="bread" v-show="isSelector">
+                <ul class="fl sui-breadcrumb">
+                    <li>
+                        <a href="#">全部结果</a>
+                    </li>
+                </ul>
+                <ul class="fl sui-tag">
+                    <!--  渲染类别名称 -->
+                    <li v-if="$route.query.categoryName" class="with-x">
+                        {{$route.query.categoryName}}<i @click="moveCategoryName">×</i>
+                    </li>
+                    <!--  关键词内容 -->
+                    <li v-if="$route.query.keyword" class="with-x">
+                        {{$route.query.keyword}}<i @click="moveKeyword">×</i>
+                    </li>
+                    <!--  品牌 -->
+                    <li v-if="$route.query.trademark" class="with-x">
+                        {{$route.query.trademark.split(":")[1]}}<i @click="moveTrademark">×</i>
+                    </li>
+                    <!-- 属性 -->
+                    <li v-for="item in $route.query.props" :key="item.id" class="with-x">
+                        {{item.split(":")[1]}}<i @click="$router.goSearch({props:$route.query.props.filter(v=>v !== item)})">×</i>
+                    </li>
+                </ul>
+            </div>
             <!--selector-->
             <SearchSelector></SearchSelector>
             <!--details-->
@@ -11,15 +35,11 @@
                 <div class="sui-navbar">
                     <div class="navbar-inner filter">
                         <ul class="sui-nav">
-                            <li @click.prevent="orderSearch(1)" :class="{active:type ==1}">
-                                <a href="#">综合<i  v-show="type==1"  :class="upOrDown"></i></a>
+                            <li @click.prevent="orderSearch(1)" :class="{active:type==1}">
+                                <a href="#">综合<i v-show="type==1" :class="upOrDown"></i></a>
                             </li>
-                           
-                            <!-- <li>
-                                <a href="#">价格⬆</a>
-                            </li> -->
-                            <li @click.prevent="orderSearch(2)" :class="{active:type ==2}">
-                                <a href="#">价格<i v-show="type==2"  :class="upOrDown"></i></a>
+                            <li @click.prevent="orderSearch(2)" :class="{active:type==2}">
+                                <a href="#">价格<i v-show="type==2" :class="upOrDown"></i></a>
                             </li>
                         </ul>
                     </div>
@@ -44,132 +64,118 @@
                                     <i class="command">已有<span>{{item.hotScore}}</span>人评价</i>
                                 </div>
                                 <div class="operate">
-                                    <a href="success-cart.html" target="_blank" class="sui-btn btn-bordered btn-danger">加入购物车</a>
+                                    <!-- 
+                                        1.搜索结果页，跳转添加购物车成功页面，显示添加商品信息页面（价格名称等）
+                                        @click.prevent= addcart事件()detail cartSuccess
+
+                                     -->
+                                    <a @click="'/detail/'+item.id+'.html'"
+                                       href="success-cart.html"
+                                    target="_blank"  class="sui-btn btn-bordered btn-danger">加入购物车</a>
+
+                                    
                                     <a href="javascript:void(0);" class="sui-btn btn-bordered">收藏</a>
                                 </div>
                             </div>
                         </li>
                     </ul>
                 </div>
-                <!-- 分页组件  定义好连续页，总页数等-->
-               <Pagination :continue="5" :total="103" :pageNo ="16" :pageSize="5" ></Pagination>
+                <!-- 分页组件-->
+                <Pagination :continue="5"
+                            @change-page-no="pageNo=>$router.goSearch({pageNo})"
+                            :total="$store.state.product.searchProductResult.total"
+                            :pageNo="$store.state.product.searchProductResult.pageNo"
+                            :pageSize="$store.state.product.searchProductResult.pageSize"></Pagination>
+
+
             </div>
-            <!--hotsale-->
-         <HotSale></HotSale>
         </div>
     </div>
 </template>
 
 <script>
 import SearchSelector from "@/pages/Search/SearchSelector";
-import BreadSelector from "@/pages/Search/BreadSelector"
-import HotSale from "@/pages/Search/HotSale"
+import { mapState } from 'vuex';
+
 export default {
     name: "Search",
-    components: {SearchSelector,BreadSelector,HotSale},
+    components: {SearchSelector},
     data(){
-        // 转化为数组
-        const [type,flag] =(this.$route.query.order ||"1:desc").split(":");
-
-        return{
-            // 排序方式
-            // 排序类型（type） 1:综合 2.价格
-            // 排序标识： asc:升序  dsec:降序
-            // 示例：“1：desc”
-            type,
+        const [type,flag]= (this.$route.query.order || "1:desc").split(":");
+        return {
+            type:type/1,// 综合
             flag
         }
     },
     methods:{
 
+         // 加入购物车
+        async addCart(id){
+        
+            sessionStorage.setItem("addCartInfo",JSON.stringify({
+                buyNum:this.buyNum,
+                attrList:this.spuSaleAttrList,
+                ...this.skuInfo
+            }));
+            console.log('skuId',this.$route.params.id,this.buyNum);
+            
+            await this.$store.dispatch('cart/postAddToCartAsync',{
+                skuId:this.$route.params.id,
+                skuNum:this.buyNum
+            })
+
+            this.$router.push("/addCartSuccess")
+        },
+
+
+
+        // changePageNo(pageNo){
+        //     this.$router.goSearch({pageNo});
+        // },
         orderSearch(type){
-            // 当前排序类别与选中的类别是否相同,如果
-            if(this.type ===type){
-                this.flag =this.flag ==="desc"?"asc":"desc";
-
+            console.log(222,this.type,type);
+            // 当前的排序类别与选中的类别是否相同
+            if(this.type === type){
+                console.log(11111,this.flag);
+                this.flag = this.flag==="desc"?"asc":"desc";
             }else{
-                this.type =type;
-                this.flag ="desc";
-
+                this.type = type;
+                this.flag = "desc";
             }
-            this.$router.push({
-                path:"/search",
-                query:{
-                    ...this.$route.query,
-                    order:this.type+":"+this.flag
-                }
-            })
-
+            this.$router.goSearch({order:this.type+":"+this.flag});
         },
-
-        // 移除属性
-        moveProps(prop){
-            this.$route.push({
-                path:"/search",
-                query:{
-                    ...this.$route.query,
-                    props:this.$route.query.props.filter(v=>v !== prop)
-                }
-            })
-        },
-
-
-
         // 移除类别标签
         moveCategoryName(){
             // 1- category3Id=249&categoryName=台灯
-            // const query = {...this.$route.query};
-            // delete query.categoryName;
-            // delete query.category3Id;
-            // delete query.category2Id;
-            // delete query.category1Id;
-            // // console.log(this.$route.query)
-            // this.$router.push({
-            //     path:"/search",
-            //     query
-            // })
-
-            // 2
-            const {keyword} = this.$route.query;
-            this.$router.push({
-                path:"/search",
-                query:{
-                    keyword
-                }
-            })
+            this.$router.goSearch({
+                categoryName:undefined,
+                category3Id:undefined,
+                category2Id:undefined,
+                category1Id:undefined
+            });
         },
         moveKeyword(){
-            // 1
-            // this.$router.push({
-            //     path:"/search",
-            //     query:{
-            //         keyword:undefined
-            //     }
-            // })
-
-            // 2
-            const query = {...this.$route.query};
-            delete query.keyword;
-            this.$router.push({
-                path:"/search",
-                query
-            });
+            this.$router.goSearch({
+                keyword:undefined
+            })
             this.$bus.$emit("clearKeyword");
         },
         moveTrademark(){
-            const query = {...this.$route.query}
-            delete query.trademark;
-            this.$router.push({
-                path:"/search",
-                query
-            })
+            this.$router.goSearch({trademark:undefined});
         }
     },
-   
     watch:{
         "$route.query":{
             handler(query){
-                this.$store.dispatch("product/postProductListAsync",query)
+                const {pageNo,pageSize} = this.$store.state.product.searchProductResult;
+                if(query.props && (typeof query.props === "string")){
+                    query.props = [query.props];
+                }
+                this.$store.dispatch("product/postProductListAsync",{
+                    pageNo,
+                    pageSize,
+                    ...query
+                })
             },
             immediate:true
         }
@@ -178,13 +184,20 @@ export default {
         this.$bus.$emit("clearKeyword");
     },
     computed:{
-          upOrDown(){
-            return this.flag ==="desc"?"iconfont icon-icon_down":"iconfont icon-icon_up"
+       
+        // 向上图标或者向下图标
+        upOrDown(){
+           return this.flag === "desc"?"iconfont icon-icon_down":"iconfont icon-icon_up"
         },
-
         isSelector(){
-            return
-            Object.values(this.$route.query).filter(v=>v).length>0
+            const query = {...this.$route.query};
+            delete query.pageNo;
+            if(query.props && query.props.length===0)
+                delete query.props;
+            return Object.values(query).filter(v=>{
+                // v的值是undefined,key的属性名为pageNo
+                return v;
+            }).length>0;
         }
     }
 }
@@ -200,7 +213,64 @@ h3{
     .py-container{
         width: 1200px;
         margin: 0 auto;
-      
+        .bread{
+            margin-bottom: 5px;
+            overflow: hidden;
+            .sui-breadcrumb{
+                padding: 3px 15px;
+                margin: 0;
+                font-weight: 400;
+                border-radius: 3px;
+                float:left;
+                li{
+                    display: inline-block;
+                    line-height: 18px;
+                    a{
+                        color: #666;
+                        text-decoration: none;
+                        &:hover{
+                            color: #4cb9fc;
+                        }
+                    }
+                }
+            }
+            .sui-tag{
+                margin-top: -5px;
+                list-style: none;
+                font-size: 0;
+                line-height: 0;
+                padding: 5px 0 0;
+                margin-bottom: 18px;
+                float: left;
+                .with-x{
+                    font-size: 12px;
+                    margin: 0 5px 5px 0;
+                    display: inline-block;
+                    overflow: hidden;
+                    color: #000;
+                    background: #f7f7f7;
+                    padding: 0 7px;
+                    height: 20px;
+                    line-height: 20px;
+                    border: 1px solid #dedede;
+                    white-space: nowrap;
+                    transition:color 400ms;
+                    cursor: pointer;
+                    i{
+                        margin-left: 10px;
+                        cursor: pointer;
+                        font: 400 14px tahoma;
+                        display: inline-block;
+                        height: 100%;
+                        vertical-align: middle;
+                    }
+                    &:hover{
+                        color: #28a3ef;
+                    }
+                }
+            }
+        }
+
         .details{
             margin-bottom: 5px;
             .sui-navbar{
@@ -345,49 +415,8 @@ h3{
                     }
                 }
             }
-            .pagination {
-                text-align: center;
 
-                button {
-                    margin: 0 5px;
-                    background-color: #f4f4f5;
-                    color: gray;
-                    outline: none;
-                    border-radius: 2px;
-                    padding: 0 4px;
-                    vertical-align: top;
-                    display: inline-block;
-                    font-size: 13px;
-                    min-width: 35.5px;
-                    height: 28px;
-                    line-height: 28px;
-                    cursor: pointer;
-                    box-sizing: border-box;
-                    text-align: center;
-                    border: 0;
-
-                    &[disabled] {
-                        color: #c0c4cc;
-                        cursor: not-allowed;
-                    }
-
-                    &.active {
-                        cursor: not-allowed;
-                        background-color: #c81623;
-                        color: #fff;
-                    }
-                }
-
-                span {
-                    display: inline-block;
-                    line-height: 28px;
-                    font-size: 14px;
-                    color: gray;
-                    vertical-align: middle;
-                }
-            }
         }
-     
     }
 }
 </style>

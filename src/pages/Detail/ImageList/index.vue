@@ -5,7 +5,7 @@
         <!-- 中间可滑动区域 -->
         <swiper class="swiper" :options="swiperOption">
             <swiper-slide :key="item.id" v-for="item in $store.state.product.productInfo.skuInfo.skuImageList">
-                <img @click="changeImg(item,id)" :class="{active:item.isDefault/1==1}"  src="item.imgUrl" />
+                <img  @click="changeImg(item.id)"  :class="{active:item.isDefault/1===1}" :src="item.imgUrl" />
             </swiper-slide>
         </swiper>
         <!--右按钮-->
@@ -40,14 +40,14 @@ export default {
     },
     methods:{
         changeImg(id){
-             this.$store.commit("product/CAHNGE_IMAGE_LIST_BY_ID",id);
+            this.$store.commit("product/CAHNGE_IMAGE_LIST_BY_ID",id);
         }
     }
 }
 </script>
 
 <style lang="less" scoped>
-    .specScroll {
+.specScroll {
     margin-top: 5px;
     width: 400px;
     overflow: hidden;
@@ -74,9 +74,7 @@ export default {
         margin-right: 20px;
         &.active{
             border-color:red;
-
         }
     }
 }
-
 </style>
