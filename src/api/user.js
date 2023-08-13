@@ -24,3 +24,6 @@ export const reqAddressInfo =()=>sphRequest({url: '/user/userAddress/auth/findUs
 // 10.2请求方式
 // GET
 export const reqOrderInfo=()=>sphRequest({url:"/order/auth/trade"})
+
+//提交订单的接口  /api/order/auth/submitOrder?tradeNo={tradeNo} POST
+export const postSubmitOrder=(tradeNo,data)=>sphRequest.post(`/order/auth/submitOrder?tradeNo=${tradeNo}`,data)

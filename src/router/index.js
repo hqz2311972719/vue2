@@ -11,6 +11,7 @@ import Cart from "@/pages/Cart";
 import store from "@/store"
 import { getToken } from "@/utils/auth";
 import Trade from "@/pages/Trade/index.vue";
+import  Pay from "@/pages/Pay"
 
 Vue.use(VueRouter);
 
@@ -86,7 +87,14 @@ const routes = [
 		isAuth:true
 		}
 
-}
+},{
+		path:"/pay",
+		component:Pay,
+		meta:{
+			isAuth:true
+		}
+
+	}
 ];
 const router = new VueRouter({
 	mode:"history",
