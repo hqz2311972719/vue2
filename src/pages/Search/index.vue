@@ -23,7 +23,7 @@
                         {{$route.query.trademark.split(":")[1]}}<i @click="moveTrademark">×</i>
                     </li>
                     <!-- 属性 -->
-                    <li v-for="item in $route.query.props" :key="item.id" class="with-x">
+                    <li v-for="item in $route.query.props" class="with-x">
                         {{item.split(":")[1]}}<i @click="$router.goSearch({props:$route.query.props.filter(v=>v !== item)})">×</i>
                     </li>
                 </ul>
@@ -64,16 +64,7 @@
                                     <i class="command">已有<span>{{item.hotScore}}</span>人评价</i>
                                 </div>
                                 <div class="operate">
-                                    <!-- 
-                                        1.搜索结果页，跳转添加购物车成功页面，显示添加商品信息页面（价格名称等）
-                                        @click.prevent= addcart事件()detail cartSuccess
-
-                                     -->
-                                    <a @click="'/detail/'+item.id+'.html'"
-                                       href="success-cart.html"
-                                    target="_blank"  class="sui-btn btn-bordered btn-danger">加入购物车</a>
-
-                                    
+                                    <a @click.prevent="addCart(item.id)" href="success-cart.html" target="_blank" class="sui-btn btn-bordered btn-danger">加入购物车</a>
                                     <a href="javascript:void(0);" class="sui-btn btn-bordered">收藏</a>
                                 </div>
                             </div>
@@ -95,8 +86,6 @@
 
 <script>
 import SearchSelector from "@/pages/Search/SearchSelector";
-import { mapState } from 'vuex';
-
 export default {
     name: "Search",
     components: {SearchSelector},
@@ -108,27 +97,24 @@ export default {
         }
     },
     methods:{
-
-         // 加入购物车
-        async addCart(id){
-        
+        // 加入购物车
+        async addCart(skuId){
+            // 获取商品详情
+            await this.$store.dispatch("product/getProductInfoByIdAsync",skuId)
+            // 将商品详情放置storage中
             sessionStorage.setItem("addCartInfo",JSON.stringify({
-                buyNum:this.buyNum,
-                attrList:this.spuSaleAttrList,
-                ...this.skuInfo
+                buyNum:1,
+                attrList:this.$store.state.product.productInfo.spuSaleAttrList,
+                ...this.$store.state.product.productInfo.skuInfo
             }));
-            console.log('skuId',this.$route.params.id,this.buyNum);
-            
-            await this.$store.dispatch('cart/postAddToCartAsync',{
-                skuId:this.$route.params.id,
-                skuNum:this.buyNum
+            // 加入购物车
+            await this.$store.dispatch("cart/postAddToCartAsync",{
+                skuId,
+                skuNum:1
             })
-
+            // 跳转至加入购物车成功页面
             this.$router.push("/addCartSuccess")
         },
-
-
-
         // changePageNo(pageNo){
         //     this.$router.goSearch({pageNo});
         // },
@@ -184,8 +170,6 @@ export default {
         this.$bus.$emit("clearKeyword");
     },
     computed:{
-       
-        // 向上图标或者向下图标
         upOrDown(){
            return this.flag === "desc"?"iconfont icon-icon_down":"iconfont icon-icon_up"
         },

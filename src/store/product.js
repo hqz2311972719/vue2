@@ -87,8 +87,13 @@ const mutations = {
 }
 const actions = {
 	async getProductInfoByIdAsync ({commit},id){
-		const {data} = await getProductInfoById(id);
-		commit("SAVE_PRODUCT_INFO",data);
+		const {data,code,message} = await getProductInfoById(id);
+		if(code === 200){
+			commit("SAVE_PRODUCT_INFO",data);
+		}else{
+			alert("异常"+code+message)
+		}
+	
 	},
 	async postProductListAsync({commit},body){
 		const {data} = await postProductList(body);

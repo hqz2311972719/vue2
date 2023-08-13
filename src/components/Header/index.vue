@@ -6,25 +6,15 @@
             <div class="top">
                 <div class="container">
                     <div class="loginList">
-                        <p>尚品汇欢迎您！</p>
-                        <p>
+                        <p v-if="userInfo">
+                             <span>尚品汇欢迎您！</span>
+                             <a href="" @click.prevent="$store.dispatch('user/getLogOutAsync')" class="register">退出登录</a>
+                        </p>
+                        <p v-else>
                             <span>请</span>
                             <router-link to="/login">登录</router-link>
                             <router-link to="/register" class="register">免费注册</router-link>
-                            <router-link to="/search?a=1&a=2&a=3&a=4" class="register">搜索1</router-link>
-                            <router-link :to="{
-                                path:'/search',
-                                query:{
-                                    a:[1,2,3,4]
-                                }
-                            }" class="register">搜索2
-                            </router-link>
-                            <a @click.prevent="$router.push({
-                                path:'/search',
-                                query:{
-                                    a:[1,2,3,4]
-                                }
-                            })" href="">搜索3</a>
+                            
                         </p>
                     </div>
                     <div class="typeList">
@@ -69,10 +59,12 @@
 
 <script>
 import TypeNav from "@/components/Header/TypeNav";
+import {mapState} from "vuex"
 
 export default {
     name: "Header",
     components: {TypeNav},
+    
     methods: {
         goSearch() {
             // 收集输入的关键词
@@ -93,7 +85,11 @@ export default {
         this.$bus.$on("clearKeyword", () => {
             this.$refs.keyword.value = null;
         })
+    },
+    computed:{
+        ...mapState("user",['userInfo'])
     }
+    
 }
 </script>
 

@@ -20,7 +20,7 @@
                     </div>
                 </div>
                 <div class="right-gocart">
-                    <a @click.prevent="$router.go(-1)" href="#" class="sui-btn btn-xlarge">查看商品详情</a>
+                    <a @click.prevent="$router.push('/detail/'+addCartInfo.id+'.html')" href="#" class="sui-btn btn-xlarge">查看商品详情</a>
                     <router-link to="/cart" class="sui-btn btn-xlarge btn-danger ">去购物车结算 &gt; </router-link>
                 </div>
             </div>

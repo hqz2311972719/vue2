@@ -413,7 +413,8 @@ export default {
     data() {
         return {
             // 购买的初始数量
-            buyNum: 1
+            buyNum: 1,
+            skuNum:0
         }
     },
     methods: {
@@ -431,7 +432,7 @@ export default {
             }));
             await this.$store.dispatch("cart/postAddToCartAsync",{
                 skuId:this.$route.params.id,
-                skuNum:this.buyNum
+                skuNum:this.buyNum-this.skuNum
             })
 
             this.$router.push("/addCartSuccess")
@@ -494,11 +495,22 @@ export default {
         },
         // 类别，面包屑导航
         categoryView(state) {
+            // console.log(1111,state.productInfo);// null
             return state.productInfo.categoryView || {};
         }
     }),
     mounted() {
-        this.$store.dispatch("product/getProductInfoByIdAsync", this.$route.params.id)
+        this.$store.dispatch("product/getProductInfoByIdAsync", this.$route.params.id);
+        // 获取购物车信息
+        this.$store.dispatch("cart/getCartListAsync").then(()=>{
+            const {cartList} = this.$store.state.cart;
+            // 查看购物车是否有当前商品
+            const info = cartList.find(v=>v.skuId === this.$route.params.id/1);
+            if(info){
+                // this.skuNum记录该商品在购物车中的实际数量
+                this.buyNum =this.skuNum= info.skuNum;
+            }
+        })
     }
 }
 </script>
