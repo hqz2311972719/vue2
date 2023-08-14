@@ -59,7 +59,7 @@
                     <i class="summoney">{{getCountResult.checkedPrice | currency(2,"￥")}}</i>
                 </div>
                 <div class="sumbtn">
-                    <router-link class="sum-btn" to="/trade" target="_blank">结算</router-link>
+                    <router-link class="sum-btn" to="/trade">结算</router-link>
                 </div>
             </div>
         </div>

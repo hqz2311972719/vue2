@@ -7,14 +7,14 @@
                 <div class="container">
                     <div class="loginList">
                         <p v-if="userInfo">
-                             <span>尚品汇欢迎您！</span>
-                             <a href="" @click.prevent="$store.dispatch('user/getLogOutAsync')" class="register">退出登录</a>
+                            <span>尚品汇欢迎{{userInfo.nickName}}!</span>
+                            <a @click.prevent="$store.dispatch('user/getLogOutAsync')" href="" class="register">退出登陆</a>
+
                         </p>
                         <p v-else>
                             <span>请</span>
                             <router-link to="/login">登录</router-link>
                             <router-link to="/register" class="register">免费注册</router-link>
-                            
                         </p>
                     </div>
                     <div class="typeList">
@@ -52,19 +52,18 @@
                 </div>
             </div>
         </header>
-        <TypeNav v-if="$route.meta.isTypeNav"></TypeNav>
+        <TypeNav v-show="$route.meta.isTypeNav"></TypeNav>
     </div>
 
 </template>
 
 <script>
 import TypeNav from "@/components/Header/TypeNav";
-import {mapState} from "vuex"
-
+import {mapState} from "vuex";
 export default {
     name: "Header",
     components: {TypeNav},
-    
+    computed:mapState("user",["userInfo"]),
     methods: {
         goSearch() {
             // 收集输入的关键词
@@ -85,11 +84,7 @@ export default {
         this.$bus.$on("clearKeyword", () => {
             this.$refs.keyword.value = null;
         })
-    },
-    computed:{
-        ...mapState("user",['userInfo'])
     }
-    
 }
 </script>
 

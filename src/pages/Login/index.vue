@@ -40,7 +40,6 @@ export default {
                 this.$message.error("手机号与密码不允许为省略");
                 return;
             }
-            console.log(this.$router)
             await this.$store.dispatch("user/postLoginAsync",{
                 phone,
                 password

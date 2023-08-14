@@ -1,18 +1,30 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import {enVueRouter} from "@/utils/enhance";
-import Home from "@/pages/Home";
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
-import Search from "@/pages/Search";
-import Detail from "@/pages/Detail";
-import AddCartSuccess from "@/pages/AddCartSuccess";
-import Cart from "@/pages/Cart";
-import store from "@/store"
-import { getToken } from "@/utils/auth";
-import Trade from "@/pages/Trade/index.vue";
-import  Pay from "@/pages/Pay"
+// import Home from "@/pages/Home";
+// import Login from "@/pages/Login";
+// import Register from "@/pages/Register";
+// import Search from "@/pages/Search";
+// import Detail from "@/pages/Detail";
+// import AddCartSuccess from "@/pages/AddCartSuccess";
+// import Cart from "@/pages/Cart";
+import store from "@/store";
+import {getToken} from "@/utils/auth";
+// import Trade from "@/pages/Trade";
+// import Pay from "@/pages/Pay";
+// import PaySuccess from "@/pages/PaySuccess";
 
+
+const Home =()=>import("@/pages/Home")
+const Login =()=>import("@/pages/Login")
+const Register =()=>import("@/pages/Register")
+const Search =()=>import("@/pages/Search")
+const AddCartSuccess =()=>import("@/pages/AddCartSuccess")
+const Trade =()=>import("@/pages/Trade")
+const Pay  =()=>import("@/pages/Pay")
+const Cart =()=>import("@/pages/Cart")
+const Detail =()=>import("@/pages/Detail")
+const PaySuccess =()=>import("@/pages/PaySuccess")
 Vue.use(VueRouter);
 
 enVueRouter("push");
@@ -81,18 +93,18 @@ const routes = [
 			isTypeNav: true
 		}
 	},{
-	path:"/trade",
+		path:"/trade",
 		component:Trade,
-		meta:{
-		isAuth:true
-		}
-
-},{
-		path:"/pay",
-		component:Pay,
 		meta:{
 			isAuth:true
 		}
+	},{
+		path:"/pay/:orderId.html",
+		component:Pay,
+
+	},{
+		path:"/paysuccess",
+		component:PaySuccess,
 
 	}
 ];
@@ -114,28 +126,21 @@ const router = new VueRouter({
 	
 	}
 });
-
-
-// 路由前置守卫可以解决刷新个人信息丢失的问题，是因为它可以在路由导航之前执行必要的操作，包括从服务器加载个人信息并保存在应用程序的状态中。 
- 
-// 当用户刷新页面时，应用程序的状态会重置，包括个人信息的丢失。通过在路由前置守卫中执行逻辑，我们可以在每次导航之前检查应用程序的状态是否包含个人信息。如果个人信息不存在，前置守卫可以触发一个异步操作，例如从服务器加载个人信息。一旦个人信息加载完成，守卫可以将其保存在应用程序的状态中，确保在刷新后仍然可以访问。 
- 
-// 使用路由前置守卫的好处是，它可以在用户导航到需要个人信息的路由之前，自动处理个人信息的加载和保存。这样，无论用户是首次进入应用还是刷新页面，都可以确保个人信息的持久性和一致性。
 router.beforeEach(async function(to,from,next){
-	if(getToken()&&!store.state.user.userInfo)
-	  await store.dispatch("user/getUserInfoAsync")
-	// 判断路由是否登录
+	if(getToken() && !store.state.user.userInfo)
+		await store.dispatch("user/getUserInfoAsync");
+	// 判断路由是否需要登陆
 	if(to.meta.isAuth){
-		if(getToken()) 	next()
-
+		if(getToken()) next();
 		else next({
 			path:"/login",
-			query: {
-				cb: to.path
+			query:{
+				cb:to.path
 			}
-			})
-		}else{
-			next();
-		}
+		})
+	}else{
+		next();
+	}
+	
 })
 export default router;

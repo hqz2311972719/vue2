@@ -8,7 +8,7 @@ export default {
 			timer.getMinutes().toString().padStart(2, 0) + ":" +
 			timer.getSeconds().toString().padStart(2, 0);
 	},
-	currency(v,n=2,type="$"){
+	currency(v=0,n=2,type="$"){
 		return type+v.toFixed(n);
 	}
 }

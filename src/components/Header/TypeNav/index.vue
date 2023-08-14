@@ -82,7 +82,7 @@ export default {
     mounted() {
         // 非简写：
         // this.$store.dispatch("product/getBaseCategoryListAsync", 15)
-
+        // console.log("mounted")
         // 简写:
         this.getBaseCategoryListAsync(15);
     }

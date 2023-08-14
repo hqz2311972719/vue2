@@ -1,0 +1,116 @@
+[
+	{
+		"id": "001",
+		"name": "家用电器",
+		"keywords": ["节能补贴", "4K电视", "空气净化器", "IH电饭煲", "滚筒洗衣机", "电热水器"],
+		"imgUrl": "https://img10.360buyimg.com/babel/s290x370_jfs/t1/64377/2/24134/23451/63981c57E14c486b9/1e3c5cbbf2c56d12.png!cc_290x370.avif",
+		"navList": [
+			{
+				"url": "http://www.atguigu.com",
+				"text": "热门"
+			},
+			{
+				"url": "http://www.atguigu.com",
+				"text": "大家电"
+			},
+			{
+				"url": "http://www.atguigu.com",
+				"text": "生活电器"
+			},
+			{
+				"url": "http://www.atguigu.com",
+				"text": "厨房电器"
+			},
+			{
+				"url": "http://www.atguigu.com",
+				"text": "应季电器"
+			},
+			{
+				"url": "http://www.atguigu.com",
+				"text": "空气/净水"
+			},
+			{
+				"url": "http://www.atguigu.com",
+				"text": "高端电器"
+			}
+		],
+		"carouselList": [
+			{
+				"id": "0011",
+				"imgUrl": "/images/floor-1-b01.png"
+			},
+			{
+				"id": "0012",
+				"imgUrl": "/images/floor-1-b02.png"
+			},
+			{
+				"id": "0013",
+				"imgUrl": "/images/floor-1-b03.png"
+			}
+		],
+		"recommendList": [
+			"/images/floor-1-2.png",
+			"/images/floor-1-3.png",
+			"/images/floor-1-5.png",
+			"/images/floor-1-6.png"
+		],
+		"bigImg": "/images/floor-1-4.png"
+	},
+	{
+		"id": "002",
+		"name": "手机通讯",
+		"keywords": ["高通骁龙", "16核处理器", "超高性价比", "鸿蒙系统", "以旧换新", "免费升级"],
+		"imgUrl": "https://img11.360buyimg.com/babel/s290x370_jfs/t1/150170/16/31882/47005/639928e3E11b297d1/dc9928f36ad174e8.png!cc_290x370.avif",
+		"navList": [
+			{
+				"url": "http://www.atguigu.com",
+				"text": "安卓机皇"
+			},
+			{
+				"url": "http://www.atguigu.com",
+				"text": "热销爆品"
+			},
+			{
+				"url": "http://www.atguigu.com",
+				"text": "性价比之王"
+			},
+			{
+				"url": "http://www.atguigu.com",
+				"text": "华为钜惠"
+			},
+			{
+				"url": "http://www.atguigu.com",
+				"text": "小米黑科技"
+			},
+			{
+				"url": "http://www.atguigu.com",
+				"text": "老人机"
+			},
+			{
+				"url": "http://www.atguigu.com",
+				"text": "极致奢华"
+			}
+		],
+		"carouselList": [
+			{
+				"id": "0011",
+				"imgUrl": "https://img13.360buyimg.com/jdcms/s150x150_jfs/t1/104604/24/38920/81780/6419c3f5F5adad9c3/8d4db1f7033a545d.jpg.avif"
+			},
+			{
+				"id": "0012",
+				"imgUrl": "https://img14.360buyimg.com/jdcms/s150x150_jfs/t1/123182/29/28824/91278/62c6433fE4f36ec20/54834e2ebcc9cf91.jpg.avif"
+			},
+			{
+				"id": "0013",
+				"imgUrl": "https://img12.360buyimg.com/jdcms/s150x150_jfs/t1/219077/35/23136/160290/64c9f231Fdbcded04/c457dd1f10680144.jpg.avif"
+			}
+		],
+		"recommendList": [
+			"/images/floor-1-2.png",
+			"/images/floor-1-3.png",
+			"/images/floor-1-5.png",
+			"/images/floor-1-6.png"
+		],
+		"bigImg": "/images/floor-1-4.png"
+	}
+]

@@ -3,9 +3,8 @@ import Vuex from "vuex";
 import product from "@/store/product";
 import adv from "@/store/adv";
 import cart from "@/store/cart";
-import user from "@/store/user"
-import trade from "@/store/trade";
-
+import user from "@/store/user";
+import order from "@/store/order";
 Vue.use(Vuex);
 const store = new Vuex.Store({
 	modules:{
@@ -13,8 +12,7 @@ const store = new Vuex.Store({
 		adv,
 		cart,
 		user,
-		trade
-
+		order
 	}
 });
 export default store;
